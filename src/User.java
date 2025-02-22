@@ -1,5 +1,6 @@
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.security.PublicKey;
 import java.util.Objects;
 
 public class User {
@@ -12,6 +13,8 @@ public class User {
     private Long lastConnectionTimeStamp;
     private String userServerPort;
     private Long connectionCheckThreadId;
+    private PublicKey rsaPublicKey;
+    private String certifiedRsaPublicKey;
 
 
 
@@ -23,6 +26,20 @@ public class User {
         this.password = password;
         this.remoteSocketAdress = ipAdress;
 
+    }
+
+    public User(String userName, String password, SocketAddress ipAdress,PublicKey publicKey) {
+        this.userName = userName;
+        this.password = password;
+        this.remoteSocketAdress = ipAdress;
+        this.rsaPublicKey=publicKey;
+        this.certifiedRsaPublicKey=certificatePublicKey(publicKey);
+
+    }
+
+    private String certificatePublicKey(PublicKey publicKey) {
+
+            return null;
     }
 
     public String getUserName() {

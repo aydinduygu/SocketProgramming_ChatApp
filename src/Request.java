@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.security.PublicKey;
 
 public class Request implements Serializable {
 
@@ -7,6 +8,7 @@ public class Request implements Serializable {
     private String password;
     private String clientServerPortNumber;
     private String searchedUser;
+    private PublicKey rsaPublicKey;
 
     /*
     * 1-register
@@ -17,9 +19,15 @@ public class Request implements Serializable {
     * */
     private int requestType;
 
+    public Request(String userName, String password, String clientServerPortNumber, PublicKey rsaPublicKey, int requestType) {
+        this.userName = userName;
+        this.password = password;
+        this.clientServerPortNumber = clientServerPortNumber;
+        this.rsaPublicKey = rsaPublicKey;
+        this.requestType = requestType;
+    }
 
-
-    public Request(String userName, String password,int requestType, String clientServerPortNumber) {
+    public Request(String userName, String password, int requestType, String clientServerPortNumber) {
         this.userName = userName;
         this.password = password;
         this.requestType=requestType;

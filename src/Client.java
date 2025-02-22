@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -42,28 +44,37 @@ public class Client {
         initializeNewSocket();
 
         try {
+
+            MyEncryptionManager encryptionManager=new MyEncryptionManager();
+
+            PublicKey publicKey = encryptionManager.generateNewRsaKeys(512).getPublic();
+
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
             listenForMessage(this.socket, objectOutputStream, objectInputStream);
-            Request request = new Request(userName, password, 1, portNumber);
-            if (this.socket != null && !this.socket.isClosed() && this.socket.isConnected() && objectOutputStream != null) {
-
-                try {
-                    objectOutputStream.writeObject(request);
-                    objectOutputStream.flush();
-                    this.userName = userName;
-                    this.password = password;
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        } catch (IOException e) {
+            Request request = new Request(userName, password,portNumber,publicKey,1);
+            requestToOOS(userName, password, objectOutputStream, request);
+        } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
 
 
+    }
+
+    private void requestToOOS(String userName, String password, ObjectOutputStream objectOutputStream, Request request) {
+        if (this.socket != null && !this.socket.isClosed() && this.socket.isConnected() && objectOutputStream != null) {
+
+            try {
+                objectOutputStream.writeObject(request);
+                objectOutputStream.flush();
+                this.userName = userName;
+                this.password = password;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     private void login(String userName, String password) throws IOException {
@@ -72,18 +83,7 @@ public class Client {
         ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
         listenForMessage(this.socket, objectOutputStream, objectInputStream);
         Request request = new Request(userName, password, 2, portNumber);
-        if (this.socket != null && !this.socket.isClosed() && this.socket.isConnected() && objectOutputStream != null) {
-
-            try {
-                objectOutputStream.writeObject(request);
-                objectOutputStream.flush();
-                this.userName = userName;
-                this.password = password;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
+        requestToOOS(userName, password, objectOutputStream, request);
 
     }
 
